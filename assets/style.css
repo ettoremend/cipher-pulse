@@ -1,0 +1,99 @@
+:root {
+    --bg-main: #0a0b10;
+    --card-bg: rgba(18, 22, 36, 0.7);
+    --border-color: rgba(0, 240, 255, 0.15);
+    --accent-cyan: #00f0ff;
+    --accent-red: #ff0055;
+    --accent-green: #00ff66;
+    --text-primary: #e2e8f0;
+    --font-mono: 'Courier New', Courier, monospace;
+}
+
+body {
+    margin: 0;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-image: radial-gradient(circle at 50% 0%, #151d30 0%, #0a0b10 70%);
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.logo span { color: var(--accent-cyan); }
+
+.search-box input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    padding: 0.6rem 1rem;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.search-box button {
+    background: var(--accent-cyan);
+    color: #000;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.score-circle {
+    font-size: 3rem;
+    font-weight: bold;
+    font-family: var(--font-mono);
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.score-circle.good { color: var(--accent-green); }
+.score-circle.warning { color: #ffaa00; }
+.score-circle.critical { color: var(--accent-red); }
+
+ul { list-style: none; padding: 0; }
+
+li {
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+}
+
+.badge-danger { background: rgba(255, 0, 85, 0.1); border-left: 3px solid var(--accent-red); }
+.badge-success { background: rgba(0, 255, 102, 0.1); border-left: 3px solid var(--accent-green); }
