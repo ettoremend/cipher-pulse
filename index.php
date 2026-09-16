@@ -1,49 +1,53 @@
-import sys
-import json
-import requests
-import urllib3
+<?php
+$target = filter_input(INPUT_GET, 'target', FILTER_SANITIZE_URL) ?: 'https://example.com';
+$escaped_target = escapeshellarg($target);
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+// Executa o script Python
+$command = "python3 engine/scanner.py " . $escaped_target;
+$raw_output = shell_exec($command);
+$data = json_decode($raw_output, true) ?: [];
+$score = $data['score'] ?? 0;
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherPulse // Security Operations Dashboard</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="navbar">
+            <div class="logo">CIPHER<span>PULSE</span></div>
+            <form method="GET" class="search-box">
+                <input type="text" name="target" value="<?= htmlspecialchars($target) ?>" placeholder="Target Domain (ex: target.com)">
+                <button type="submit">AUDITAR</button>
+            </form>
+        </header>
 
-def audit_target(url):
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url
+        <main class="grid-layout">
+            <div class="card score-card">
+                <h3>Pontuação de Segurança</h3>
+                <div class="score-circle <?= $score < 60 ? 'critical' : ($score < 85 ? 'warning' : 'good') ?>">
+                    <span><?= $score ?></span>/100
+                </div>
+                <p>Status HTTP: <strong><?= $data['status'] ?? 'N/A' ?></strong></p>
+            </div>
 
-    headers_to_check = [
-        "Strict-Transport-Security",
-        "Content-Security-Policy",
-        "X-Frame-Options",
-        "X-Content-Type-Options",
-        "Referrer-Policy"
-    ]
-
-    report = {
-        "target": url,
-        "status": "Unknown",
-        "score": 100,
-        "missing_headers": [],
-        "present_headers": {}
-    }
-
-    try:
-        response = requests.get(url, timeout=5, verify=False)
-        report["status"] = response.status_code
-
-        for header in headers_to_check:
-            if header in response.headers:
-                report["present_headers"][header] = response.headers[header]
-            else:
-                report["missing_headers"].append(header)
-                report["score"] -= 15
-
-        report["score"] = max(0, report["score"])
-
-    except Exception as e:
-        report["error"] = str(e)
-        report["score"] = 0
-
-    return report
-
-if __name__ == "__main__":
-    target_url = sys.argv[1] if len(sys.argv) > 1 else "https://example.com"
-    print(json.dumps(audit_target(target_url)))
+            <div class="card headers-card">
+                <h3>Cabeçalhos Ausentes (Vulnerabilidades)</h3>
+                <ul>
+                    <?php if (!empty($data['missing_headers'])): ?>
+                        <?php foreach ($data['missing_headers'] as $header): ?>
+                            <li class="badge-danger">⚠️ <?= htmlspecialchars($header) ?></li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li class="badge-success">✔ Todos os cabeçalhos recomendados estão presentes!</li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
